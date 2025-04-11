@@ -1,0 +1,284 @@
+\documentclass[11pt]{article}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage{geometry}
+
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+\definecolor{ginger}{RGB}{255,193,7}
+\definecolor{forestGreen}{RGB}{34,139,34}
+\definecolor{lakeblue}{RGB}{0, 191, 255}
+\lstset{
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny\color{black},
+    keywordstyle=\color{ginger},
+    commentstyle=\color{gray},
+    stringstyle=\color{forestGreen},
+    backgroundcolor=\color{lightgray!10},
+    frame=single,
+    breaklines=true,
+    tabsize=4,
+    showstringspaces=false,
+    xleftmargin=20pt,
+    xrightmargin=10pt,
+    rulecolor=\color{black!30},
+    numbersep=5pt,
+    language=java,
+    morekeywords=[2]{
+        getDescription, cost, registerObserver, removeObserver, notifyObservers, update
+    },
+    morekeywords=[3]{
+        beverage, out, temperature, humidity, observers, 
+    },
+    morekeywords=[4]{
+        @Override
+    },
+    keywordstyle=[2]\color{lakeblue},
+    keywordstyle=[3]\color{violet},
+    keywordstyle=[4]\color{yellow},
+}
+
+\title{Analyzing ``No Silver Bullet'' and Design Patterns}
+\author{Qibin Gu\\2143132 \and Yi Ni\\2142298 \and Liangyuting Zhang\\2142253 \and Zhenyu Dai\\2143217}
+\date{\today}
+\begin{document}
+%\includepdf{cover.pdf}
+\maketitle
+\begin{abstract}
+This report delves into the fundamental challenges of software engineering as outlined in Fred Brooks' influential article ``No Silver Bullet'' and explores how the Decorator and Observer design patterns can effectively address these challenges. The inherent difficulties in software development, including complexity, conformity, changeability, and invisibility, often lead to project overruns and compromised quality. The Decorator pattern is analyzed through a case study of a coffee shop order system, demonstrating its ability to reduce complexity and manage changes dynamically by avoiding subclass explosion and adhering to the Open/Closed Principle. The Observer pattern is examined in the context of a weather monitoring system, highlighting its role in decoupling subjects from observers, enhancing system transparency, and supporting extensibility. The report concludes that integrating these design patterns into software engineering practices can significantly improve software productivity, maintainability, and quality, and recommends their continued use as part of a broader strategy to incrementally and sustainably tackle the inherent complexities of software development.
+\end{abstract}
+
+\newpage
+
+\section{Introduction}
+Fred Brooks' seminal article, ``No Silver Bullet'', emphasizes fundamental challenges in software engineering that cannot be solved by any single technological breakthrough or methodology. These inherent difficulties—complexity, conformity, changeability, and invisibility—often result in projects exceeding budgets, delayed schedules, and compromised quality. This report explores in detail how two prominent design patterns, the Composite Pattern and the Observer Pattern, can effectively mitigate these critical challenges.
+
+\subsection{Key Challenges from ``No Silver Bullet''}
+
+Brooks identifies the following four primary inherent challenges in software engineering \cite{brooks1987no}:
+\begin{enumerate}
+\item Complexity 
+
+Complexity contains state complexity, function complexity and structure complexity
+
+   As the system grows in scale, the number of possible states increases exponentially, far beyond what developers can fully enumerate and understand, which makes it extremely difficult to predict and test the system’s conditions, directly contributing to its unreliability. 
+
+   At the same time, as the functionality becomes more complex, invoking becomes increasingly cumbersome, making it challenging for users to quickly and accurately access the desired features, thereby affecting usability. 
+
+   Moreover, the growing complexity of the software's structure means that adding and extending features often impact other parts of the system, easily leading to side effects, even affecting the stability of the whole system. In addition, complex structures often own hidden states that cannot be directly observed; if these states are not captured in a timely manner, they can become security trapdoors in the system.
+
+\item Conformity
+
+Conformity refers to the requirement for a software system to adhere to external interfaces, standards, or past systems
+
+   If the software is the latest system to appear on the market, it needs to be compatible with existing system interfaces; Sometimes the software is considered to be the easiest to achieve conformity across a variety of existing systems. This complexity, brought about by external interface requirements, cannot be eliminated by simply redesigning the software internally.
+
+\item Changeability
+
+Changeability refers to the need for the software to make corresponding adjustments according to internal and external changes
+
+   Software is essentially function embedded in system, and it is easier to modify than other physical products. In addition, the software is embedded in a constantly changing cultural matrix and may need to be adjusted at any time due to new needs, or other changes in the external environment.
+
+   Successful software will inevitably undergo continuous evolution. When the software proves the practicality of its basic functions, users often apply it to new scenarios, resulting in demand for extended functions; secondly, when new computers, disks, etc. appear, the software needs to make adjustments to adapt to the new operating environment. These constant internal and external changes make the variability of software an indispensable feature. 
+
+\item Invisibility
+
+Invisibility refers to the fact that software does not have an inherent physical form
+
+   As an abstract structure, software is different from buildings that can be visually expressed through blueprints, and needs to be represented by several directed diagrams with different representations. These diagrams are usually more complex, non-planar, and lack a natural hierarchical order. In order to manage and understand this complexity, developers usually have to artificially impose hierarchies through techniques such as ``link cutting''.
+\end{enumerate}
+
+\section{Pattern Analysis}
+
+\subsection{Decorator Pattern}
+\begin{itemize}
+\item Definition and Importance
+
+A structural design pattern called Decorator makes it easier to dynamically add behaviours to particular objects without changing how other objects of the same class behave. This technique is useful because it may improve object functions during runtime, offering a versatile substitute for sub-classes in the extension of functionalities.
+
+\item Justification for Selection
+
+The Decorator pattern, as outlined in the seminal work \cite{brooks1987no}, serves as a dynamic alternative to subclassing for extending object functionality. By wrapping objects with decorators that adhere to the same interface, developers can add or remove features at runtime without modifying the core class structure. This approach enhances flexibility, reduces code duplication, and aligns with the Open/Closed Principle by allowing systems to evolve without altering existing code. The pattern is particularly advantageous in scenarios requiring selective enhancement, such as adding features to specific objects in a complex application.
+\end{itemize}
+
+\subsection{Observer Pattern}
+\begin{itemize}
+\item Definition and Importance
+
+The Observer Pattern is a behavioral design pattern that defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.
+
+\item Justification for Selection
+
+The Observer Pattern decouples subjects from observers, enhancing system flexibility and scalability. It effectively addresses the challenges of complexity and invisibility discussed in Brooks’ article.
+\end{itemize}
+
+\section{Case study}
+
+\subsection{Decorator Pattern}
+\subsubsection{Case Study: Decorator Pattern in a Coffee Shop Order System}
+The Decorator pattern is widely used in applications requiring dynamic functionality enhancement. Consider a coffee shop order system where beverages can have various condiments (e.g., milk, soy, whipped cream). Each condiment adds cost and description, but hardcoding combinations would lead to combinatorial explosion. The Decorator pattern elegantly addresses this challenge.  
+
+\subsubsection{Code Implementation}
+See the code implementation in Listing \ref{code1}.
+\begin{lstlisting}[caption=Code implementation of the coffee shop order system., label=code1]
+// Core interface for beverages  
+interface Beverage {  
+    String getDescription();  
+    double cost();  
+}  
+
+// Concrete component: basic beverage  
+class Espresso implements Beverage {  
+    @Override  
+    public String getDescription() { return "Espresso"; }  
+    @Override  
+    public double cost() { return 1.99; }  
+}  
+
+// Decorator abstract class  
+abstract class CondimentDecorator implements Beverage {  
+    protected Beverage beverage;  
+    public abstract String getDescription();  
+}  
+
+// Concrete decorator: Milk  
+class Milk extends CondimentDecorator {  
+    public Milk(Beverage b) { beverage = b; }  
+    @Override  
+    public String getDescription() {  
+        return beverage.getDescription() + ", Milk";  
+    }  
+    @Override  
+    public double cost() { return beverage.cost() + 0.50; }  
+}  
+
+// Usage  
+Beverage order = new Espresso();  
+order = new Milk(order); // Add milk dynamically  
+System.out.println(order.getDescription() + ": $" + order.cost());  
+\end{lstlisting}
+
+\subsubsection{Analysis of Challenges from ``No Silver Bullet''}
+\begin{itemize}
+\item Complexity
+
+Brooks highlights complexity as an inherent challenge in software. The Decorator pattern reduces complexity by avoiding subclass explosion. Instead of creating classes for every possible combination (e.g., `EspressoWithMilk`, `HouseBlendWithSoyAndWhip`), decorators dynamically wrap objects, minimizing code duplication and maintaining scalability.  
+\item Change Management
+   
+   Software must evolve over time. The Decorator pattern supports the Open/Closed Principle, allowing new condiments to be added without modifying existing code. This addresses Brooks’ concern about managing changes in requirements, as functionalities can be extended incrementally without destabilizing the core system.  
+\item Consistency
+   
+   Brooks emphasizes the need for consistent abstractions. The Decorator pattern maintains a uniform interface between components and decorators, ensuring all objects adhere to the `Beverage` contract. This consistency simplifies maintenance and avoids the rigidity of subclassing, where changes propagate across multiple classes.  
+\end{itemize}
+
+The Decorator pattern effectively tackles challenges like complexity, change management, and consistency by enabling dynamic, modular enhancements. It aligns with Brooks’ assertion that while no single solution exists, thoughtful design patterns can mitigate software development challenges.
+
+\subsection{Observer Pattern}
+
+\subsubsection{Case Study: Weather Monitoring System}
+In a weather monitoring system, multiple display devices (e.g., temperature gauges, humidity meters) need real-time updates on weather data. Hardcoding update logic in each display device would make the system difficult to maintain.
+
+\subsubsection{Code Implementation}
+See the code implementation in Listing \ref{code2}.
+\begin{lstlisting}[caption=Code implementation of the weather monitoring system., label=code2]
+// Subject Interface  
+interface Subject {  
+    void registerObserver(Observer o);  
+    void removeObserver(Observer o);  
+    void notifyObservers();  
+}  
+
+// Observer Interface  
+interface Observer {  
+    void update(float temperature, float humidity);  
+}  
+
+// Concrete Subject: Weather Data  
+class WeatherData implements Subject {  
+    private List<Observer> observers;  
+    private float temperature;  
+    private float humidity;  
+
+    public WeatherData() {  
+        observers = new ArrayList<>();  
+    }  
+
+    @Override  
+    public void registerObserver(Observer o) {  
+        observers.add(o);  
+    }  
+
+    @Override  
+    public void removeObserver(Observer o) {  
+        observers.remove(o);  
+    }  
+
+    @Override  
+    public void notifyObservers() {  
+        for (Observer observer : observers) {  
+            observer.update(temperature, humidity);  
+        }  
+    }  
+
+    public void setMeasurements(float temperature, float humidity) {  
+        this.temperature = temperature;  
+        this.humidity = humidity;  
+        notifyObservers();  
+    }  
+}  
+
+// Concrete Observer: Temperature Display  
+class TemperatureDisplay implements Observer {  
+    @Override  
+    public void update(float temperature, float humidity) {  
+        System.out.println("Current temperature: " + temperature);  
+    }  
+}  
+
+// Usage  
+WeatherData weatherData = new WeatherData();  
+Observer tempDisplay = new TemperatureDisplay();  
+weatherData.registerObserver(tempDisplay);  
+weatherData.setMeasurements(25.0f, 60.0f);  
+\end{lstlisting}
+
+\subsubsection{Analysis of Challenges from ``No Silver Bullet''}
+\begin{itemize}
+\item Complexity 
+
+   The Observer Pattern reduces complexity by decoupling subjects from observers, eliminating hardcoded update logic in each observer.
+
+\item Invisibility  
+
+   The Observer Pattern enhances system transparency by providing a uniform interface and notification mechanism, making state changes more visible.
+
+\item Change Management
+
+   New observers can be added by simply implementing the observer interface and registering with the subject, supporting system extensibility without modifying existing code.
+\end{itemize}
+   
+
+\section{Group Task Allocation and Version Control}
+Team responsibilities were allocated clearly to optimize productivity and ensure accountability and The team employed Git for version control, providing transparency, accountability, and traceability throughout the project. Each member regularly committed their contributions, which facilitated seamless integration and easy tracking of changes and progress.
+
+\section{Conclusion}
+Through comprehensive analysis of Brooks' article ``No Silver Bullet'' and practical applications of the Composite and Observer Patterns, we determined effective strategies to mitigate core software engineering challenges. The Composite Pattern dramatically simplifies the management of complex hierarchical software structures, addressing the critical issue of complexity. Conversely, the Observer Pattern promotes adaptability and responsiveness, effectively handling frequent and continuous changes in software requirements.
+
+Integrating such design patterns into regular software engineering practice can result in considerable improvements in software productivity, maintainability, and quality. Moving forward, software development should continue leveraging proven design patterns as part of a broader strategy to tackle inherent complexities incrementally and sustainably.
+
+\begin{thebibliography}{99}
+
+\bibitem{brooks1987no}
+F. P. Brooks, ``No Silver Bullet: Essence and Accidents of Software Engineering,'' 
+\emph{Computer}, vol. 20, no. 4, pp. 10--19, April 1987.
+
+\bibitem{gamma1994design}
+E. Gamma, R. Helm, R. Johnson, and J. Vlissides, 
+\emph{Design Patterns: Elements of Reusable Object-Oriented Software}, 1st ed. 
+Boston, MA: Addison-Wesley, 1994.
+
+\end{thebibliography}
+\includepdf{contribution.pdf}
+\end{document}
